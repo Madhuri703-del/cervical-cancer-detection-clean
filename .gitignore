@@ -1,0 +1,4 @@
+*.bmp
+uploads/
+dataset/
+__pycache__/
