@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cervical Cancer Detection</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            color: black;
+            padding: 30px;
+            border-radius: 15px;
+            width: 400px;
+            margin: auto;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            margin: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #5a67d8;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .normal {
+            color: green;
+            font-weight: bold;
+        }
+
+        .danger {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🧬 Cervical Cancer Detection</h1>
+
+    <div class="container">
+        <form action="/predict" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" required><br>
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if prediction %}
+            <div class="result">
+                <h3>Prediction: {{ prediction }}</h3>
+
+                {% if cancer == "Normal" %}
+                    <p class="normal">✅ No Cancer Detected</p>
+                {% else %}
+                    <p class="danger">⚠️ Possible Cancer Detected</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if labels %}
+            <canvas id="chart"></canvas>
+
+            <script>
+                new Chart(document.getElementById("chart"), {
+                    type: 'bar',
+                    data: {
+                        labels: {{ labels|tojson }},
+                        datasets: [{
+                            label: 'Confidence (%)',
+                            data: {{ values|tojson }},
+                            borderWidth: 1
+                        }]
+                    }
+                });
+            </script>
+        {% endif %}
+    </div>
+
+</body>
+</html>
