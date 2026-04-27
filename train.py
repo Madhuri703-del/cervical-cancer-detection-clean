@@ -117,7 +117,7 @@ history2 = model.fit(
 )
 
 # Save
-model.save("model.keras")
+model.save("best_model.keras")
 
 print("✅ Improved Model Trained!")
 

@@ -28,7 +28,7 @@ def allowed_file(filename):
 
 # ✅ Load model safely
 try:
-    model = load_model("model.keras")
+    model = load_model("best_model.keras")
     print("✅ Model loaded successfully")
 except Exception as e:
     print("❌ Model loading error:", e)
@@ -89,5 +89,4 @@ def predict():
 
 # ✅ Correct run for deployment
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="127.0.0.1", port=5001, debug=True)
