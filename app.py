@@ -16,22 +16,32 @@ IMG_SIZE = 224
 
 classes = ['Dyskeratotic','Koilocytotic','Metaplastic','Parabasal','Superficial']
 
-model = None
+# ✅ Ensure uploads folder exists
+UPLOAD_FOLDER = "uploads"
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'bmp'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# ✅ Load model safely
+try:
+    model = load_model("model.keras")
+    print("✅ Model loaded successfully")
+except Exception as e:
+    print("❌ Model loading error:", e)
+    model = None
 
 @app.route('/')
 def home():
     return render_template("index.html")
 
-
 @app.route('/predict', methods=['POST'])
 def predict():
-    global model
+    if model is None:
+        return render_template("index.html", prediction="Model not loaded!")
 
     file = request.files.get('file')
 
@@ -41,7 +51,7 @@ def predict():
     if not allowed_file(file.filename):
         return render_template("index.html", prediction="Invalid file type!")
 
-    filepath = os.path.join("uploads", file.filename)
+    filepath = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(filepath)
 
     try:
@@ -73,10 +83,11 @@ def predict():
             values=values
         )
 
-    except:
+    except Exception as e:
+        print("❌ Prediction error:", e)
         return render_template("index.html", prediction="Error processing image!")
 
-
+# ✅ Correct run for deployment
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
